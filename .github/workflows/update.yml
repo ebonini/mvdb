@@ -13,12 +13,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.TOKEN_API }}  # Use o segredo aqui
+        uses: actions/checkout@v3  # Atualizado para v3 que utiliza Node 20
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4  # Atualizado para v4 que utiliza Node 20
         with:
           python-version: '3.x'
 
