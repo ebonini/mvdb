@@ -5,7 +5,7 @@ import os
 movie_ids = ['550', '500', '600']  # Adicione mais IDs conforme necessário
 
 # Substitua 'YOUR_API_KEY' pela sua chave da API do TMDb
-api_key = os.getenv('TMDB_API_KEY')
+api_key = os.getenv('6e2e6889fccce1a5b1d120f2d8f56b8c')
 base_url = 'https://api.themoviedb.org/3/movie/'
 
 # Inicializa uma lista para armazenar os dados dos filmes
