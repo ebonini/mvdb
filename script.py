@@ -1,5 +1,6 @@
 import requests
 import os
+import json  # Certifique-se de importar o módulo json
 
 # Lista de IDs dos filmes para capturar metadados
 movie_ids = ['550', '500', '600']  # Adicione mais IDs conforme necessário
