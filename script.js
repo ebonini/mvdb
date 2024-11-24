@@ -27,9 +27,11 @@ try {
 
     async function accessSheet() {
         try {
+            const range = 'Base!A:D'; // Ajuste o nome da planilha e o intervalo conforme necessário
+            console.log(`Tentando acessar o intervalo: ${range}`);
             const res = await sheets.spreadsheets.values.get({
                 spreadsheetId: docId,
-                range: 'Base!A:D', // Certifique-se de usar o nome correto da planilha e o intervalo
+                range: range,
             });
             console.log("Dados da planilha carregados com sucesso");
 
@@ -45,7 +47,7 @@ try {
                 title: row[2],
                 description: row[3]
             }));
-            console.log("Dados processados da planilha");
+            console.log(`Dados processados da planilha: ${JSON.stringify(contents, null, 2)}`);
 
             const movies = [];
             const tvShows = [];
@@ -66,6 +68,7 @@ try {
                     } else {
                         tvShows.push(response.data);
                     }
+                    console.log(`Dados recebidos do TMDb para ID: ${content.id}`);
                 } catch (error) {
                     if (error.response && error.response.status === 404) {
                         console.error(`Recurso não encontrado para o ID: ${content.id}`);
@@ -74,7 +77,8 @@ try {
                     }
                 }
             }
-            console.log("Dados do TMDb carregados");
+            console.log(`Filmes carregados: ${JSON.stringify(movies, null, 2)}`);
+            console.log(`Séries carregadas: ${JSON.stringify(tvShows, null, 2)}`);
 
             // Gere o conteúdo XML
             const xmlContent = generateXML(movies, tvShows);
