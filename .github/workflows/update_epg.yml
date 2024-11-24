@@ -35,12 +35,14 @@ jobs:
     - name: List files in directory
       run: ls -la
 
-    - name: Pull, commit, and push changes
+    - name: Stash, pull, and commit changes
       run: |
         git config --local user.email "you@example.com"
         git config --local user.name "Your Name"
+        git stash  # Faz um stash das mudanças locais
         git pull origin main  # Puxa as últimas alterações do repositório remoto
-        git add -f epg.xml epg.xml.gz
+        git stash pop  # Aplica as mudanças do stash
+        git add -f epg.xml epg.xml.gz  # Força a adição dos arquivos
         git commit -m "Update EPG"
         git push
       env:
