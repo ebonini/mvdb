@@ -4,7 +4,7 @@ const fs = require('fs');
 const zlib = require('zlib');
 
 const apiKey = process.env.TMDB_API_KEY; // Obtém a chave de API do TMDb do secret do GitHub Actions
-const docId = '1iVkOZrWp8QLQ0G7-lbwTPJqcBpbttmVlqpKXSzh1yCQ'; // ID da planilha do Google Sheets
+const docId = 'SEU_DOC_ID'; // ID da planilha do Google Sheets
 const credentials = process.env.GOOGLE_SHEETS_CREDENTIALS;
 
 if (!credentials) {
@@ -27,7 +27,7 @@ try {
 
     async function accessSheet() {
         try {
-            const range = 'Base!A:D'; // Ajuste o nome da planilha e o intervalo conforme necessário
+            const range = 'Planilha1!A:D'; // Ajuste o nome da planilha e o intervalo conforme necessário
             console.log(`Tentando acessar o intervalo: ${range}`);
             const res = await sheets.spreadsheets.values.get({
                 spreadsheetId: docId,
@@ -86,7 +86,7 @@ try {
             // Gere o conteúdo XML
             const xmlContent = generateXML(movies, tvShows);
             saveXML(xmlContent, 'epg.xml');
-            compressXML(xmlContent, 'epg.xml.gz');
+            compressXML('epg.xml', 'epg.xml.gz');
         } catch (error) {
             console.error("Erro ao acessar a planilha:", error);
         }
@@ -131,12 +131,13 @@ try {
 
     function compressXML(input, output) {
         try {
+            console.log(`Iniciando compressão do arquivo: ${input}`);
             const fileContents = fs.createReadStream(input);
             const writeStream = fs.createWriteStream(output);
             const zip = zlib.createGzip();
 
             fileContents.pipe(zip).pipe(writeStream).on('finish', (err) => {
-                if (err) return console.error(err);
+                if (err) return console.error("Erro ao comprimir o arquivo:", err);
                 console.log(`Arquivo comprimido salvo como ${output}`);
             });
         } catch (error) {
