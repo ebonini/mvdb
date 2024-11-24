@@ -28,7 +28,7 @@ try {
     async function accessSheet() {
         const res = await sheets.spreadsheets.values.get({
             spreadsheetId: docId,
-            range: 'Sheet1!A:D', // Ajuste o intervalo conforme necessário
+            range: 'Base!A:D', // Ajuste o intervalo conforme necessário
         });
         console.log("Dados da planilha carregados com sucesso");
 
