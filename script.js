@@ -26,50 +26,63 @@ try {
     const sheets = google.sheets({ version: 'v4', auth });
 
     async function accessSheet() {
-        const res = await sheets.spreadsheets.values.get({
-            spreadsheetId: docId,
-            range: 'Base!A:D', // Ajuste o intervalo conforme necessário
-        });
-        console.log("Dados da planilha carregados com sucesso");
-
-        const rows = res.data.values;
-        if (!rows || rows.length === 0) {
-            console.error('Nenhum dado encontrado na planilha.');
-            return;
-        }
-
-        const contents = rows.slice(1).map(row => ({
-            id: row[0],
-            type: row[1],
-            title: row[2],
-            description: row[3]
-        }));
-        console.log("Dados processados da planilha");
-
-        const movies = [];
-        const tvShows = [];
-
-        for (const content of contents) {
-            const url = content.type === 'movie'
-                ? `https://api.themoviedb.org/3/movie/${content.id}`
-                : `https://api.themoviedb.org/3/tv/${content.id}`;
-            console.log(`Requisitando URL: ${url}`);
-            const response = await axios.get(url, {
-                params: { api_key: apiKey }
+        try {
+            const res = await sheets.spreadsheets.values.get({
+                spreadsheetId: docId,
+                range: 'Planilha1!A:D', // Certifique-se de usar o nome correto da planilha e o intervalo
             });
+            console.log("Dados da planilha carregados com sucesso");
 
-            if (content.type === 'movie') {
-                movies.push(response.data);
-            } else {
-                tvShows.push(response.data);
+            const rows = res.data.values;
+            if (!rows || rows.length === 0) {
+                console.error('Nenhum dado encontrado na planilha.');
+                return;
             }
-        }
-        console.log("Dados do TMDb carregados");
 
-        // Gere o conteúdo XML
-        const xmlContent = generateXML(movies, tvShows);
-        saveXML(xmlContent, 'epg.xml');
-        compressXML('epg.xml', 'epg.xml.gz');
+            const contents = rows.slice(1).map(row => ({
+                id: row[0],
+                type: row[1],
+                title: row[2],
+                description: row[3]
+            }));
+            console.log("Dados processados da planilha");
+
+            const movies = [];
+            const tvShows = [];
+
+            for (const content of contents) {
+                const url = content.type === 'movie'
+                    ? `https://api.themoviedb.org/3/movie/${content.id}`
+                    : `https://api.themoviedb.org/3/tv/${content.id}`;
+                console.log(`Requisitando URL: ${url}`);
+
+                try {
+                    const response = await axios.get(url, {
+                        params: { api_key: apiKey }
+                    });
+
+                    if (content.type === 'movie') {
+                        movies.push(response.data);
+                    } else {
+                        tvShows.push(response.data);
+                    }
+                } catch (error) {
+                    if (error.response && error.response.status === 404) {
+                        console.error(`Recurso não encontrado para o ID: ${content.id}`);
+                    } else {
+                        console.error(`Erro ao requisitar URL: ${url}`, error);
+                    }
+                }
+            }
+            console.log("Dados do TMDb carregados");
+
+            // Gere o conteúdo XML
+            const xmlContent = generateXML(movies, tvShows);
+            saveXML(xmlContent, 'epg.xml');
+            compressXML('epg.xml', 'epg.xml.gz');
+        } catch (error) {
+            console.error("Erro ao acessar a planilha:", error);
+        }
     }
 
     function generateXML(movies, tvShows) {
