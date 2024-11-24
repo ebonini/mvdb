@@ -39,7 +39,8 @@ jobs:
       run: |
         git config --local user.email "you@example.com"
         git config --local user.name "Your Name"
-        git add --ignore-unmatch epg.xml epg.xml.gz  # Adiciona especificamente os arquivos necessários
+        git add epg.xml || echo "epg.xml não encontrado, ignorando..."
+        git add epg.xml.gz || echo "epg.xml.gz não encontrado, ignorando..."
         git status  # Verificar se os arquivos foram adicionados corretamente
         git commit -m "Update EPG"
         git push
