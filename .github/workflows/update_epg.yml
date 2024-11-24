@@ -35,11 +35,12 @@ jobs:
     - name: List files in directory
       run: ls -la
 
-    - name: Force add and commit EPG files
+    - name: Pull, commit, and push changes
       run: |
         git config --local user.email "you@example.com"
         git config --local user.name "Your Name"
-        git add -f epg.xml epg.xml.gz  # Força a adição dos arquivos
+        git pull origin main  # Puxa as últimas alterações do repositório remoto
+        git add -f epg.xml epg.xml.gz
         git commit -m "Update EPG"
         git push
       env:
