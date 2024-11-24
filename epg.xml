@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tv>
-<programme id="1124641" title="Classified">
-  <description><![CDATA[Operating alone in the field for more than 20 years, a CIA hitman uses the "Help Wanted" section of the newspapers to get his orders from the Agency. His long-lost daughter, now a UK MI6 analyst, tracks him down to deliver shocking news: his CIA boss has been dead for years and the division long since shut down. Together, they set out to discover whose orders he's been executing.]]></description>
+<programme tvg-id="1124641" title="Alvo Secreto">
+  <description><![CDATA[Um assassino de aluguel da CIA descobre que sua divisão está fechada há anos. Agora, ele terá que descobrir quem vinha lhe dando ordens.]]></description>
 </programme>
-<programme id="533535" title="Deadpool & Wolverine">
-  <description><![CDATA[A listless Wade Wilson toils away in civilian life with his days as the morally flexible mercenary, Deadpool, behind him. But when his homeworld faces an existential threat, Wade must reluctantly suit-up again with an even more reluctant Wolverine.]]></description>
+<programme tvg-id="533535" title="Deadpool & Wolverine">
+  <description><![CDATA[Um apático Wade Wilson trabalha duro na vida civil. Seus dias como mercenário moralmente flexível, Deadpool, ficaram para trás. Quando seu planeta enfrenta uma ameaça, Wade deve relutantemente vestir-se novamente com um ainda mais relutante... relutante? Mais relutante? Ele deve convencer um Wolverine relutante em... Porra. As sinopses são tão estúpidas.]]></description>
 </programme>
 </tv>
