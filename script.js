@@ -1,10 +1,10 @@
-const { GoogleSpreadsheet } = require('google-spreadsheet');
+const { google } = require('googleapis');
 const axios = require('axios');
 const fs = require('fs');
 const zlib = require('zlib');
 
 const apiKey = process.env.TMDB_API_KEY; // Obtém a chave de API do TMDb do secret do GitHub Actions
-const docId = 'SEU_DOC_ID'; // ID da planilha do Google Sheets
+const docId = '1iVkOZrWp8QLQ0G7-lbwTPJqcBpbttmVlqpKXSzh1yCQ'; // ID da planilha do Google Sheets
 const credentials = process.env.GOOGLE_SHEETS_CREDENTIALS;
 
 if (!credentials) {
@@ -12,91 +12,106 @@ if (!credentials) {
     process.exit(1);
 }
 
-const parsedCredentials = JSON.parse(credentials); // Parseia as credenciais JSON
+try {
+    const parsedCredentials = JSON.parse(credentials); // Parseia as credenciais JSON
 
-// Inicialize a planilha
-const doc = new GoogleSpreadsheet(docId);
+    // Autenticação com a API do Google
+    const auth = new google.auth.GoogleAuth({
+        credentials: parsedCredentials,
+        scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly']
+    });
 
-async function accessSheet() {
-    await doc.useServiceAccountAuth(parsedCredentials);
-    await doc.loadInfo(); // Carrega a planilha e suas metadados
-    const sheet = doc.sheetsByIndex[0]; // Pega a primeira aba da planilha
+    const sheets = google.sheets({ version: 'v4', auth });
 
-    // Leia as linhas da planilha
-    const rows = await sheet.getRows();
-    const contents = rows.map(row => ({
-        id: row['Content ID'],
-        type: row['Content Type'],
-        title: row['Title'],
-        description: row['Description']
-    }));
-
-    const movies = [];
-    const tvShows = [];
-
-    for (const content of contents) {
-        const url = content.type === 'movie'
-            ? `https://api.themoviedb.org/3/movie/${content.id}`
-            : `https://api.themoviedb.org/3/tv/${content.id}`;
-        const response = await axios.get(url, {
-            params: { api_key: apiKey }
+    async function accessSheet() {
+        const res = await sheets.spreadsheets.values.get({
+            spreadsheetId: docId,
+            range: 'Sheet1!A:D', // Ajuste o intervalo conforme necessário
         });
 
-        if (content.type === 'movie') {
-            movies.push(response.data);
-        } else {
-            tvShows.push(response.data);
+        const rows = res.data.values;
+        if (!rows || rows.length === 0) {
+            console.error('Nenhum dado encontrado na planilha.');
+            return;
         }
+
+        const contents = rows.slice(1).map(row => ({
+            id: row[0],
+            type: row[1],
+            title: row[2],
+            description: row[3]
+        }));
+
+        const movies = [];
+        const tvShows = [];
+
+        for (const content of contents) {
+            const url = content.type === 'movie'
+                ? `https://api.themoviedb.org/3/movie/${content.id}`
+                : `https://api.themoviedb.org/3/tv/${content.id}`;
+            const response = await axios.get(url, {
+                params: { api_key: apiKey }
+            });
+
+            if (content.type === 'movie') {
+                movies.push(response.data);
+            } else {
+                tvShows.push(response.data);
+            }
+        }
+
+        // Gere o conteúdo XML
+        const xmlContent = generateXML(movies, tvShows);
+        saveXML(xmlContent, 'epg.xml');
+        compressXML('epg.xml', 'epg.xml.gz');
     }
 
-    // Gere o conteúdo XML
-    const xmlContent = generateXML(movies, tvShows);
-    saveXML(xmlContent, 'epg.xml');
-    compressXML('epg.xml', 'epg.xml.gz');
-}
-
-function generateXML(movies, tvShows) {
-    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<tv>\n';
-    
-    movies.forEach(movie => {
-        const tvgId = movie.id;
-        const description = movie.overview;
-        const title = movie.title;
+    function generateXML(movies, tvShows) {
+        let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<tv>\n';
         
-        xml += `<programme id="${tvgId}" title="${title}">\n`;
-        xml += `  <description><![CDATA[${description}]]></description>\n`;
-        xml += `</programme>\n`;
-    });
+        movies.forEach(movie => {
+            const tvgId = movie.id;
+            const description = movie.overview;
+            const title = movie.title;
+            
+            xml += `<programme id="${tvgId}" title="${title}">\n`;
+            xml += `  <description><![CDATA[${description}]]></description>\n`;
+            xml += `</programme>\n`;
+        });
 
-    tvShows.forEach(show => {
-        const tvgId = show.id;
-        const description = show.overview;
-        const title = show.name;
-        
-        xml += `<programme id="${tvgId}" title="${title}">\n`;
-        xml += `  <description><![CDATA[${description}]]></description>\n`;
-        xml += `</programme>\n`;
-    });
+        tvShows.forEach(show => {
+            const tvgId = show.id;
+            const description = show.overview;
+            const title = show.name;
+            
+            xml += `<programme id="${tvgId}" title="${title}">\n`;
+            xml += `  <description><![CDATA[${description}]]></description>\n`;
+            xml += `</programme>\n`;
+        });
 
-    xml += '</tv>\n';
-    return xml;
+        xml += '</tv>\n';
+        return xml;
+    }
+
+    function saveXML(content, filename) {
+        fs.writeFileSync(filename, content);
+        console.log(`Arquivo XML salvo como ${filename}`);
+    }
+
+    function compressXML(input, output) {
+        const fileContents = fs.createReadStream(input);
+        const writeStream = fs.createWriteStream(output);
+        const zip = zlib.createGzip();
+
+        fileContents.pipe(zip).pipe(writeStream).on('finish', (err) => {
+            if (err) return console.error(err);
+            console.log(`Arquivo comprimido salvo como ${output}`);
+        });
+    }
+
+    // Execute a função para acessar a planilha e atualizar o EPG
+    accessSheet();
+} catch (error) {
+    console.error("Erro ao parsear as credenciais:", error);
+    process.exit(1);
 }
-
-function saveXML(content, filename) {
-    fs.writeFileSync(filename, content);
-    console.log(`Arquivo XML salvo como ${filename}`);
-}
-
-function compressXML(input, output) {
-    const fileContents = fs.createReadStream(input);
-    const writeStream = fs.createWriteStream(output);
-    const zip = zlib.createGzip();
-
-    fileContents.pipe(zip).pipe(writeStream).on('finish', (err) => {
-        if (err) return console.error(err);
-        console.log(`Arquivo comprimido salvo como ${output}`);
-    });
-}
-
-// Execute a função para acessar a planilha e atualizar o EPG
-accessSheet();
