@@ -1,0 +1,5 @@
+echo 'node_modules/' >> .gitignore
+echo 'package-lock.json' >> .gitignore
+git add .gitignore
+git commit -m "Adicione .gitignore para ignorar node_modules e package-lock.json"
+git push
