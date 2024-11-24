@@ -31,8 +31,8 @@ jobs:
 
     - name: Commit changes
       run: |
-        git config --local user.email "you@example.com"
-        git config --local user.name "Your Name"
+        git config --local user.email "eduardo@ebonini.com.br"
+        git config --local user.name "Automated"
         git add epg.xml epg.xml.gz
         git commit -m "Update EPG"
         git push
