@@ -86,7 +86,7 @@ try {
             // Gere o conteúdo XML
             const xmlContent = generateXML(movies, tvShows);
             saveXML(xmlContent, 'epg.xml');
-            compressXML('epg.xml', 'epg.xml.gz');
+            compressXML(xmlContent, 'epg.xml.gz');
         } catch (error) {
             console.error("Erro ao acessar a planilha:", error);
         }
