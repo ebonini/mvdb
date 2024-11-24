@@ -29,7 +29,7 @@ try {
         try {
             const res = await sheets.spreadsheets.values.get({
                 spreadsheetId: docId,
-                range: 'Planilha1!A:D', // Certifique-se de usar o nome correto da planilha e o intervalo
+                range: 'Base!A:D', // Certifique-se de usar o nome correto da planilha e o intervalo
             });
             console.log("Dados da planilha carregados com sucesso");
 
