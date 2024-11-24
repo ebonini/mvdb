@@ -11,6 +11,9 @@ jobs:
   update-epg:
     runs-on: ubuntu-latest
     
+    permissions:
+      contents: write  # Garante permissões de escrita no repositório
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
