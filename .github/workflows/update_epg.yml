@@ -35,15 +35,11 @@ jobs:
     - name: List files in directory
       run: ls -la
 
-    - name: Force resolve conflicts, commit, and push changes
+    - name: Commit and push changes
       run: |
         git config --local user.email "you@example.com"
         git config --local user.name "Your Name"
-        git stash
-        git pull origin main --rebase
-        git stash pop
-        git checkout --ours epg.xml epg.xml.gz  # Mantém as mudanças locais
-        git add epg.xml epg.xml.gz
+        git add -f epg.xml epg.xml.gz  # Força a adição dos arquivos
         git commit -m "Update EPG" || echo "Nada para commitar"  # Ignora erro se não houver nada para commitar
         git push || echo "Nada para enviar"  # Ignora erro se não houver nada para enviar
       env:
