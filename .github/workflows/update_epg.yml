@@ -1,0 +1,40 @@
+name: Update EPG
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Executa todos os dias à meia-noite
+  push:
+    branches:
+      - main
+
+jobs:
+  update-epg:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install dependencies
+      run: npm install google-spreadsheet axios fs zlib
+
+    - name: Create credentials file
+      run: echo "${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}" > credentials.json
+
+    - name: Run EPG script
+      run: node script.js
+
+    - name: Commit changes
+      run: |
+        git config --local user.email "you@example.com"
+        git config --local user.name "Your Name"
+        git add epg.xml epg.xml.gz
+        git commit -m "Update EPG"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
