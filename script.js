@@ -3,7 +3,7 @@ const axios = require('axios');
 const fs = require('fs');
 const zlib = require('zlib');
 
-const apiKey = 'SUA_CHAVE_DE_API';
+const apiKey = process.env.TMDB_API_KEY; // Obtém a chave de API do TMDb do secret do GitHub Actions
 const docId = 'SEU_DOC_ID'; // ID da planilha do Google Sheets
 const credentials = JSON.parse(process.env.GOOGLE_SHEETS_CREDENTIALS); // Obtém as credenciais do secret do GitHub Actions
 
