@@ -14,12 +14,14 @@ if (!credentials) {
 
 try {
     const parsedCredentials = JSON.parse(credentials); // Parseia as credenciais JSON
+    console.log("Credenciais parseadas com sucesso");
 
     // Autenticação com a API do Google
     const auth = new google.auth.GoogleAuth({
         credentials: parsedCredentials,
         scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly']
     });
+    console.log("Autenticação configurada com sucesso");
 
     const sheets = google.sheets({ version: 'v4', auth });
 
@@ -28,6 +30,7 @@ try {
             spreadsheetId: docId,
             range: 'Sheet1!A:D', // Ajuste o intervalo conforme necessário
         });
+        console.log("Dados da planilha carregados com sucesso");
 
         const rows = res.data.values;
         if (!rows || rows.length === 0) {
@@ -41,6 +44,7 @@ try {
             title: row[2],
             description: row[3]
         }));
+        console.log("Dados processados da planilha");
 
         const movies = [];
         const tvShows = [];
@@ -49,6 +53,7 @@ try {
             const url = content.type === 'movie'
                 ? `https://api.themoviedb.org/3/movie/${content.id}`
                 : `https://api.themoviedb.org/3/tv/${content.id}`;
+            console.log(`Requisitando URL: ${url}`);
             const response = await axios.get(url, {
                 params: { api_key: apiKey }
             });
@@ -59,6 +64,7 @@ try {
                 tvShows.push(response.data);
             }
         }
+        console.log("Dados do TMDb carregados");
 
         // Gere o conteúdo XML
         const xmlContent = generateXML(movies, tvShows);
@@ -90,6 +96,7 @@ try {
         });
 
         xml += '</tv>\n';
+        console.log("Conteúdo XML gerado");
         return xml;
     }
 
