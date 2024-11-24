@@ -130,14 +130,18 @@ try {
     }
 
     function compressXML(input, output) {
-        const fileContents = fs.createReadStream(input);
-        const writeStream = fs.createWriteStream(output);
-        const zip = zlib.createGzip();
+        try {
+            const fileContents = fs.createReadStream(input);
+            const writeStream = fs.createWriteStream(output);
+            const zip = zlib.createGzip();
 
-        fileContents.pipe(zip).pipe(writeStream).on('finish', (err) => {
-            if (err) return console.error(err);
-            console.log(`Arquivo comprimido salvo como ${output}`);
-        });
+            fileContents.pipe(zip).pipe(writeStream).on('finish', (err) => {
+                if (err) return console.error(err);
+                console.log(`Arquivo comprimido salvo como ${output}`);
+            });
+        } catch (error) {
+            console.error("Erro ao comprimir o arquivo XML:", error);
+        }
     }
 
     // Execute a função para acessar a planilha e atualizar o EPG
