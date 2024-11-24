@@ -29,10 +29,13 @@ jobs:
         TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
         GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
 
+    - name: List files in directory
+      run: ls -la
+
     - name: Commit changes
       run: |
-        git config --local user.email "eduardo@ebonini.com.br"
-        git config --local user.name "Automated"
+        git config --local user.email "you@example.com"
+        git config --local user.name "Your Name"
         git add epg.xml epg.xml.gz
         git commit -m "Update EPG"
         git push
