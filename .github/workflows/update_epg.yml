@@ -35,16 +35,16 @@ jobs:
     - name: List files in directory
       run: ls -la
 
-    - name: Resolve conflicts, commit, and push changes
+    - name: Commit and push changes
       run: |
         git config --local user.email "you@example.com"
         git config --local user.name "Your Name"
         git stash
         git pull origin main --rebase
         git stash pop
-        git add -A
-        git rebase --continue || git rebase --skip  # Se o rebase falhar, tenta pular
-        git commit -m "Update EPG"
-        git push
+        git add -f epg.xml epg.xml.gz  # Força a adição dos arquivos
+        git rebase --continue || echo "Nenhum rebase em andamento"  # Ignora erro se não houver rebase em andamento
+        git commit -m "Update EPG" || echo "Nada para commitar"  # Ignora erro se não houver nada para commitar
+        git push || echo "Nada para enviar"  # Ignora erro se não houver nada para enviar
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
