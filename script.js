@@ -4,14 +4,21 @@ const fs = require('fs');
 const zlib = require('zlib');
 
 const apiKey = process.env.TMDB_API_KEY; // Obtém a chave de API do TMDb do secret do GitHub Actions
-const docId = '1iVkOZrWp8QLQ0G7-lbwTPJqcBpbttmVlqpKXSzh1yCQ'; // ID da planilha do Google Sheets
-const credentials = JSON.parse(process.env.GOOGLE_SHEETS_CREDENTIALS); // Obtém as credenciais do secret do GitHub Actions
+const docId = 'SEU_DOC_ID'; // ID da planilha do Google Sheets
+const credentials = process.env.GOOGLE_SHEETS_CREDENTIALS;
+
+if (!credentials) {
+    console.error("Credenciais não fornecidas");
+    process.exit(1);
+}
+
+const parsedCredentials = JSON.parse(credentials); // Parseia as credenciais JSON
 
 // Inicialize a planilha
 const doc = new GoogleSpreadsheet(docId);
 
 async function accessSheet() {
-    await doc.useServiceAccountAuth(credentials);
+    await doc.useServiceAccountAuth(parsedCredentials);
     await doc.loadInfo(); // Carrega a planilha e suas metadados
     const sheet = doc.sheetsByIndex[0]; // Pega a primeira aba da planilha
 
