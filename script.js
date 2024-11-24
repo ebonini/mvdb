@@ -4,7 +4,7 @@ const fs = require('fs');
 const zlib = require('zlib');
 
 const apiKey = process.env.TMDB_API_KEY; // Obtém a chave de API do TMDb do secret do GitHub Actions
-const docId = 'SEU_DOC_ID'; // ID da planilha do Google Sheets
+const docId = '1iVkOZrWp8QLQ0G7-lbwTPJqcBpbttmVlqpKXSzh1yCQ'; // ID da planilha do Google Sheets
 const credentials = process.env.GOOGLE_SHEETS_CREDENTIALS;
 
 if (!credentials) {
@@ -27,7 +27,7 @@ try {
 
     async function accessSheet() {
         try {
-            const range = 'Planilha1!A:D'; // Ajuste o nome da planilha e o intervalo conforme necessário
+            const range = 'Base!A:D'; // Ajuste o nome da planilha e o intervalo conforme necessário
             console.log(`Tentando acessar o intervalo: ${range}`);
             const res = await sheets.spreadsheets.values.get({
                 spreadsheetId: docId,
