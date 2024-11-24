@@ -44,7 +44,6 @@ jobs:
         git stash pop
         git checkout --ours epg.xml epg.xml.gz  # Mantém as mudanças locais
         git add epg.xml epg.xml.gz
-        git rebase --continue || echo "Nenhum rebase em andamento"  # Ignora erro se não houver rebase em andamento
         git commit -m "Update EPG" || echo "Nada para commitar"  # Ignora erro se não houver nada para commitar
         git push || echo "Nada para enviar"  # Ignora erro se não houver nada para enviar
       env:
