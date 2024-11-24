@@ -94,8 +94,12 @@ try {
     }
 
     function saveXML(content, filename) {
-        fs.writeFileSync(filename, content);
-        console.log(`Arquivo XML salvo como ${filename}`);
+        try {
+            fs.writeFileSync(filename, content);
+            console.log(`Arquivo XML salvo como ${filename}`);
+        } catch (error) {
+            console.error("Erro ao salvar o arquivo XML:", error);
+        }
     }
 
     function compressXML(input, output) {
