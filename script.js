@@ -60,7 +60,10 @@ try {
 
                 try {
                     const response = await axios.get(url, {
-                        params: { api_key: apiKey }
+                        params: {
+                            api_key: apiKey,
+                            language: 'pt-BR' // Solicitar dados em português do Brasil
+                        }
                     });
 
                     if (content.type === 'movie') {
@@ -97,7 +100,7 @@ try {
             const description = movie.overview;
             const title = movie.title;
             
-            xml += `<programme id="${tvgId}" title="${title}">\n`;
+            xml += `<programme tvg-id="${tvgId}" title="${title}">\n`;
             xml += `  <description><![CDATA[${description}]]></description>\n`;
             xml += `</programme>\n`;
         });
@@ -107,7 +110,7 @@ try {
             const description = show.overview;
             const title = show.name;
             
-            xml += `<programme id="${tvgId}" title="${title}">\n`;
+            xml += `<programme tvg-id="${tvgId}" title="${title}">\n`;
             xml += `  <description><![CDATA[${description}]]></description>\n`;
             xml += `</programme>\n`;
         });
