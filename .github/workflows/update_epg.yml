@@ -39,8 +39,7 @@ jobs:
       run: |
         git config --local user.email "you@example.com"
         git config --local user.name "Your Name"
-        git status
-        git add -u epg.xml epg.xml.gz
+        git add --force epg.xml epg.xml.gz  # Adiciona especificamente os arquivos necessários
         git commit -m "Update EPG"
         git push
       env:
